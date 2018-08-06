@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Circuits</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="styles/main.css" />
+    <script type "text/javascript" src="scripts/index.js"></script>
+</head>
+
+<body>
+    <form action="exercici.php" method="get" id="myForm">
+        <input type="hidden" name="circuit" id="formCircuit" />
+        <input type="hidden" name="potencia" id="formPotencia"/>
+        <input type="hidden" name="resistencies" id="formResistencies" />
+    </form>
+
+    <p>Magnitud resistències:<br/>
+        10-100 Ohms <input type="radio" id="radio1" name="resMag"/><br/>
+        100-1k Ohms <input type="radio" id="radio2" name="resMag"/><br/>
+        500-10k Ohms <input type="radio" id="radio3" name="resMag"/><br/>
+    </p>
+
+    <p class="checkbox">Potència i energia <input type="checkbox" id="potencia"></p>
+    <br/>
+    <p onmouseover="this.style.textDecoration = 'underline';" onmouseout="this.style.textDecoration = 'none';" class="circuit-title" onclick="loadPage(this);">Circuits sèrie</p>
+    <br/>
+    <p onmouseover="this.style.textDecoration = 'underline';" onmouseout="this.style.textDecoration = 'none';" class="circuit-title" onclick="loadPage(this);">Circuits paral·lel</p>
+    <br/>
+    <p onmouseover="this.style.textDecoration = 'underline';" onmouseout="this.style.textDecoration = 'none';" class="circuit-title" onclick="loadPage(this);">Circuits mixtos</p>
+</body>
+
+</html>
