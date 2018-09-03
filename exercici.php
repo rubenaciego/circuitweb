@@ -33,9 +33,7 @@
 </head>
 
 <body>
-    <div id="exercicis"></div>
-    <br/>
-    <button type="button" onclick="generateInformes();">Generar informe</button>
+    <div id="exercicis" class="exercici"></div>
     <br/><br/>
 
     <?php

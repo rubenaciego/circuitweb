@@ -1,11 +1,28 @@
 
 var exercise = [];
-var informes0 = [null, null, null];
-var informes1 = [null, null, null];
-const numExercicis = 3;
+var informes0 = [];
+var informes1 = [];
+const numExercicis = 1;
+const maxExercicis = 5;
+var actualExercici = 0;
+var circuitChanged = false;
 
-window.onload = function() {
+window.onload = nextExercise;
+
+function nextExercise()
+{
+    if (actualExercici >= maxExercicis)
+    {
+        generateInformes();
+        return;
+    }
+
+    if (instances > 0)
+        circuitChanged = true;
+
     const div = document.getElementById("exercicis");
+    div.innerHTML = "";
+    instances = 0;
     
     for (var i = 0; i < numExercicis; i++)
     {
@@ -23,7 +40,15 @@ window.onload = function() {
 
 function onButtonPress(button)
 {
+    if (button.innerHTML == "Següent")
+    {
+        circuitChanged = false;
+        instances = 0;
+        nextExercise();
+    }
+
     const instance = parseInt(button.id);
+    clearInterval(exercise[instance].timerHandle);
 
     var ans = [];
 
@@ -52,25 +77,21 @@ function onButtonPress(button)
     var inform = exercise[instance].checkAnswers(ans);
 
     if (exercise[instance].type == 1 || exercise[instance].type == 'mixt')
-        informes0[instance] = inform;
+        informes0[actualExercici] = inform;
     else
-        informes1[instance] = inform;
+        informes1[actualExercici] = inform;
+    
+    actualExercici++;
 
     return inform;
 }
 
-function onRefreshPress(button)
-{
-    instance = parseInt(button.id.split("refresh")[1]);
-
-    document.getElementById("exercici" + instance).innerHTML = "";
-    exercise[instance] = new Exercici('exercici' + instance, pageName, Math.random() > 0.5 ? 1 : 2, instance);
-    exercise[instance].draw();
-}
-
 function startTimer(button)
 {
-    exercise[parseInt(button.id.split("timer")[1])].startTimer();
+    var instance = parseInt(button.id.split("timer")[1]);
+    exercise[instance].startTimer();
+    exercise[instance].showExercise();
+    exercise[instance].draw();
     button.remove();
 }
 
@@ -99,15 +120,15 @@ function generateInformes()
         if (informes0[i] == null)
             continue;
 
-        if (informes0[i]["ResistenciaTotal"] == "be")
+        if (informes0[i]["Rt"] == "y")
             resistenciaTotalBe++;
-        if (informes0[i]["IntensitatTotal"] == "be")
+        if (informes0[i]["It"] == "n")
             intensitatTotalBe++;
 
         var j = 0;
-        while (informes0[i]["VoltageResistencia" + j] != undefined)
+        while (informes0[i]["VoltageR" + j] != undefined)
         {
-            if (informes0[i]["VoltageResistencia" + j] == "be")
+            if (informes0[i]["VoltageR" + j] == "y")
                 voltatgesBe++;
 
             j++;
@@ -133,21 +154,21 @@ function generateInformes()
         if (informes1[i] == null)
             continue;
 
-        if (informes1[i]["ResistenciaTotal"] == "be")
+        if (informes1[i]["ResistenciaTotal"] == "y")
             resistenciaTotalBe++;
-        if (informes1[i]["IntensitatTotal"] == "be")
+        if (informes1[i]["IntensitatTotal"] == "y")
             intensitatTotalBe++;
 
         var j = 0;
         while (informes1[i]["Resistencia" + j] != undefined)
         {
-            if (informes1[i]["Resistencia" + j] == "be")
+            if (informes1[i]["Resistencia" + j] == "y")
                 resistenciesBe++;
 
             j++;
         }
 
-        resistaenciesQuantity += j;
+        resistenciesQuantity += j;
     }
 
     document.getElementById("total1").innerHTML = "Resistencia Total: " + resistenciaTotalBe
@@ -164,16 +185,16 @@ function buildHtmlTable(selector, myList)
         if (myList[i] == null)
             continue;
 
-      var row$ = $('<tr/>');
+        var row$ = $('<tr/>');
 
-      for (var colIndex = 0; colIndex < columns.length; colIndex++)
-      {
-        var cellValue = myList[i][columns[colIndex]];
-        if (cellValue == null) cellValue = "";
-        row$.append($('<td/>').html(cellValue));
-      }
+        for (var colIndex = 0; colIndex < columns.length; colIndex++)
+        {
+            var cellValue = myList[i][columns[colIndex]];
+            if (cellValue == null) cellValue = "";
+            row$.append($('<td/>').html(cellValue));
+        }
 
-      $(selector).append(row$);
+        $(selector).append(row$);
     }
 }
 
@@ -187,19 +208,19 @@ function addAllColumnHeaders(myList, selector)
         if (myList[i] == null)
             continue;
 
-      var rowHash = myList[i];
+        var rowHash = myList[i];
 
-      for (var key in rowHash)
-      {
-        if ($.inArray(key, columnSet) == -1)
+        for (var key in rowHash)
         {
-          columnSet.push(key);
-          headerTr$.append($('<th/>').html(key));
+            if ($.inArray(key, columnSet) == -1)
+            {
+                columnSet.push(key);
+                headerTr$.append($('<th/>').html(key));
+            }
         }
-      }
     }
 
     $(selector).append(headerTr$);
-  
+    
     return columnSet;
 }
