@@ -1,8 +1,7 @@
 
-var exercise = [];
+var exercise;
 var informes0 = [];
 var informes1 = [];
-const numExercicis = 1;
 const maxExercicis = 5;
 var actualExercici = 0;
 var circuitChanged = false;
@@ -17,25 +16,20 @@ function nextExercise()
         return;
     }
 
-    if (instances > 0)
-        circuitChanged = true;
+    document.getElementById("exerciseCounter").innerText = "Exercici " + (actualExercici + 1)
+        + "/" + maxExercicis;
 
     const div = document.getElementById("exercicis");
     div.innerHTML = "";
-    instances = 0;
-    
-    for (var i = 0; i < numExercicis; i++)
-    {
-        div.innerHTML += '<div id="exercici' + i + '"></div><br/>';
 
-        if (pageName != "mixt")
-            exercise[i] = new Exercici('exercici' + i, pageName, Math.random() > 0.5 ? 1 : 2);
-        else
-            exercise[i] = new ExerciciMixt('exercici' + i);
-    }
+    div.innerHTML += '<div id="exercici"></div><br/>';
 
-    for (var i = 0; i < numExercicis; i++)
-        exercise[i].draw();
+    if (pageName != "mixt")
+        exercise = new Exercici('exercici', pageName, Math.random() > 0.5 ? 1 : 2);
+    else
+        exercise = new ExerciciMixt('exercici');
+
+    exercise.draw();
 }
 
 function onButtonPress(button)
@@ -43,40 +37,38 @@ function onButtonPress(button)
     if (button.innerHTML == "Següent")
     {
         circuitChanged = false;
-        instances = 0;
         nextExercise();
+        return;
     }
 
-    const instance = parseInt(button.id);
-    clearInterval(exercise[instance].timerHandle);
+    clearInterval(exercise.timerHandle);
 
     var ans = [];
 
-    ans.push(parseFloat(document.getElementById("totalRes" + instance).value));
+    ans.push(parseFloat(document.getElementById("totalRes").value));
     
-    if (exercise[instance].type == 1 || exercise[instance].type == 'mixt')
-        ans.push(parseFloat(document.getElementById("intensity" + instance).value));
+    if (exercise.type == 1 || exercise.type == 'mixt')
+        ans.push(parseFloat(document.getElementById("intensity").value));
     else
-        ans.push(parseFloat(document.getElementById("voltage" + instance).value));
+        ans.push(parseFloat(document.getElementById("voltage").value));
     
-    for (var i = 0; i < exercise[instance].resNum; i++)
+    for (var i = 0; i < exercise.resNum; i++)
     {
-        if (exercise[instance].type == 1 || exercise[instance].type == 'mixt')
-            ans.push(parseFloat(document.getElementById("res" + i + (pageName == 'serie' || pageName == 'mixt'? 'Voltage' : 'Intensity') + instance).value));
+        if (exercise.type == 1 || exercise.type == 'mixt')
+            ans.push(parseFloat(document.getElementById("res" + i + (pageName == 'serie' || pageName == 'mixt'? 'Voltage' : 'Intensity')).value));
         else
-            ans.push(parseFloat(document.getElementById("res" + i + instance).value));
+            ans.push(parseFloat(document.getElementById("res" + i).value));
     }
 
     if (potenciaEngergia)
     {
-        ans.push(parseFloat(document.getElementById("potencia" + instance).value));
-        ans.push(parseFloat(document.getElementById("energia" + instance).value));
+        ans.push(parseFloat(document.getElementById("potencia").value));
+        ans.push(parseFloat(document.getElementById("energia").value));
     }
 
-    exercise[instance].intents++;
-    var inform = exercise[instance].checkAnswers(ans);
+    var inform = exercise.checkAnswers(ans);
 
-    if (exercise[instance].type == 1 || exercise[instance].type == 'mixt')
+    if (exercise.type == 1 || exercise.type == 'mixt')
         informes0[actualExercici] = inform;
     else
         informes1[actualExercici] = inform;
@@ -88,16 +80,17 @@ function onButtonPress(button)
 
 function startTimer(button)
 {
-    var instance = parseInt(button.id.split("timer")[1]);
-    exercise[instance].startTimer();
-    exercise[instance].showExercise();
-    exercise[instance].draw();
+    exercise.startTimer();
+    exercise.showExercise();
+    exercise.draw();
     button.remove();
 }
 
 function generateInformes()
 {
-    if (exercise[0].type == 'mixt')
+    document.getElementById("informeDiv").innerHTML = informeText;
+
+    if (exercise.type == 'mixt')
     {
         document.getElementById("table").innerHTML = "";
         buildHtmlTable("#table" ,informes0);
@@ -114,15 +107,18 @@ function generateInformes()
     var intensitatTotalBe = 0;
     var voltatgesBe = 0;
     var voltageQuantity = 0;
+    var circuitQuantity = 0;
 
     for (var i = 0; i < informes0.length; i++)
     {
         if (informes0[i] == null)
             continue;
+        
+        circuitQuantity++;
 
         if (informes0[i]["Rt"] == "y")
             resistenciaTotalBe++;
-        if (informes0[i]["It"] == "n")
+        if (informes0[i]["It"] == "y")
             intensitatTotalBe++;
 
         var j = 0;
@@ -137,32 +133,38 @@ function generateInformes()
         voltageQuantity += j;
     }
 
-    document.getElementById("total" + (exercise[0].type == 'mixt'? '' : '0')).innerHTML = "Resistencia Total: " + resistenciaTotalBe
-    + "/" + informes0.length + ". Intensitat Total: " + intensitatTotalBe + "/" + informes0.length
+    document.getElementById("total" + (exercise.type == 'mixt'? '' : '0')).innerHTML = "Resistencia Total: " + resistenciaTotalBe
+    + "/" + circuitQuantity + ". Intensitat Total: " + intensitatTotalBe + "/" + circuitQuantity
     + ". Voltatges: " + voltatgesBe + "/" + voltageQuantity;
 
-    if (exercise[0].type == 'mixt')
+    if (exercise.type == 'mixt')
+    {
+        document.getElementById("exercicis").remove();
         return;
+    }
 
     resistenciaTotalBe = 0;
-    intensitatTotalBe = 0;
+    var voltatgeTotalBe = 0;
     var resistenciesBe = 0;
-    var resistaenciesQuantity = 0;
+    var resistenciesQuantity = 0;
+    circuitQuantity = 0;
 
     for (var i = 0; i < informes1.length; i++)
     {
         if (informes1[i] == null)
             continue;
+        
+        circuitQuantity++;
 
-        if (informes1[i]["ResistenciaTotal"] == "y")
+        if (informes1[i]["Rt"] == "y")
             resistenciaTotalBe++;
-        if (informes1[i]["IntensitatTotal"] == "y")
-            intensitatTotalBe++;
+        if (informes1[i]["Vt"] == "y")
+            voltatgeTotalBe++;
 
         var j = 0;
-        while (informes1[i]["Resistencia" + j] != undefined)
+        while (informes1[i]["R" + j] != undefined)
         {
-            if (informes1[i]["Resistencia" + j] == "y")
+            if (informes1[i]["R" + j] == "y")
                 resistenciesBe++;
 
             j++;
@@ -172,8 +174,10 @@ function generateInformes()
     }
 
     document.getElementById("total1").innerHTML = "Resistencia Total: " + resistenciaTotalBe
-    + "/" + informes0.length + ". Intensitat Total: " + intensitatTotalBe + "/" + informes0.length
-    + ". Resistencies: " + resistenciesBe + "/" + resistaenciesQuantity;
+    + "/" + circuitQuantity + ". Voltatge Total: " + voltatgeTotalBe + "/" + circuitQuantity
+    + ". Resistencies: " + resistenciesBe + "/" + resistenciesQuantity;
+
+    document.getElementById("exercicis").remove();
 }
 
 function buildHtmlTable(selector, myList)

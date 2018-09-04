@@ -24,6 +24,24 @@
         const maxRes = resOption == 1 ? 100 : resOption == 2 ? 1000 : resOption == 3 ? 10000 : 100;
         const maxPower = 50;
         const minPower = 5;
+        const informeText = `<?php
+            if ($name != "mixt")
+            {
+                print '<p style="margin: 10px;">Informe circuits tipus 1:</p>
+                    <table style="margin: 10px;" id="table0" border="1"></table>
+                    <p style="margin: 10px;" id="total0"></p>
+                    <br/>
+                    <p style="margin: 10px;">Informe circuits tipus 2:</p>
+                    <table style="margin: 10px;" id="table1" border="1"></table>
+                    <p style="margin: 10px;" id="total1"></p>';
+            }
+            else
+            {
+                print '<p style="margin: 10px;">Informe circuits:</p>
+                    <table style="margin: 10px;" id="table" border="1"></table>
+                    <p style="margin: 10px;" id="total"></p>';
+            }
+            ?>`;
     </script>
     
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
@@ -33,27 +51,10 @@
 </head>
 
 <body>
+    <p style="margin:10px;" id="exerciseCounter"></p>
     <div id="exercicis" class="exercici"></div>
     <br/><br/>
-
-    <?php
-    if ($name != "mixt")
-    {
-        print '<p>Informe circuits tipus 1:</p>
-            <table id="table0" border="1"></table>
-            <p id="total0"></p>
-            <br/>
-            <p>Informe circuits tipus 2:</p>
-            <table id="table1" border="1"></table>
-            <p id="total1"></p>';
-    }
-    else
-    {
-        print '<p>Informe circuits:</p>
-            <table id="table" border="1"></table>
-            <p id="total"></p>';
-    }
-    ?>
+    <div id="informeDiv"></div>
 
 </body>
 

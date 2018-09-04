@@ -1,10 +1,9 @@
 
-var instances = 0;
 const tolerance = 0.02;
 
 class Exercici
 {
-    constructor(divID, circuitType, type, instance = null)
+    constructor(divID, circuitType, type)
     {
         if (circuitType != 'serie' && circuitType != 'paralel')
             return;
@@ -14,52 +13,11 @@ class Exercici
         
         if (potenciaEngergia)
             this.time = parseInt(Math.random() * 200 + 50);
-        
-        if (instance == null)
-        {
-            this.instance = instances;
-            instances++;
-        }
-        else
-            this.instance = instance;
 
         this.divContainer = document.getElementById(divID);
         this.type = type;
-        this.intents = 0;
         this.seconds = 0;
 
-        if (this.type == 1)
-        {
-            this.divContainer.innerHTML = `<p class="enunciat" id="enunciat` + this.instance + `"></p>
-            <canvas class="drawing" id="circuitDrawing` + this.instance + `" width="425" height="100"></canvas>
-
-            <p><input type="text" id="totalRes` + this.instance + `"> Resistència total (Ohms)</p>
-            <p><input type="text" id="intensity` + this.instance + `"> Intensitat total (A)</p>
-            
-            <div id="${circuitType == 'serie'? 'voltages' : 'intensities'}` + this.instance + `"></div>`
-            + (potenciaEngergia? '<p><input type="text" id="potencia' + this.instance + `"> Potència total (W)</p>
-            <p><input type="text" id="energia` + this.instance + `"> Energia (en Joules) consumida en ` + this.time +` segons</p>`
-            : '') + `<button type="button" id="${this.instance}" onclick="onButtonPress(this);">Comprova</button>
-            <button type="button" id="refresh${this.instance}" onclick="onRefreshPress(this);">Refer</button>`;
-        }
-        else
-        {
-            this.divContainer.innerHTML = `<p class="enunciat" id="enunciat` + this.instance + `"></p>
-            <canvas class="drawing "id="circuitDrawing` + this.instance + `" width="425" height="100"></canvas>
-
-            <p><input type="text" id="totalRes` + this.instance + `"> Resistència total (Ohms)</p>
-            <p><input type="text" id="voltage` + this.instance + `"> Voltatge total (V)</p>
-            
-            <div id="resistencies` + this.instance + `"></div>`
-            + (potenciaEngergia? '<p><input type="text" id="potencia' + this.instance + `"> Potència total (W)</p>
-            <p><input type="text" id="energia` + this.instance + `"> Energia (en Joules) consumida en ` + this.time +` segons</p>`
-            : '') + `<button type="button" id="${this.instance}" onclick="onButtonPress(this);">Comprova</button>
-            <button type="button" id="refresh${this.instance}" onclick="onRefreshPress(this);">Refer</button>`;
-        }
-
-        this.divContainer.innerHTML += '\n<button type=button id="timer' + this.instance + '" onclick="startTimer(this);">Start</button>';
-
-        var p = document.getElementById("enunciat" + this.instance);
         this.power = Math.round(Math.random() * 21) + 3;
         this.resNum = Math.round(Math.random() * 5) + 2;
 
@@ -72,7 +30,67 @@ class Exercici
 
         for (var i = 0; i < this.resNum; i++)
             res.push(Math.round(Math.random() * (maxRes - minRes)) + minRes);
+
+        this.divContainer.innerHTML = `<div class="divEnunciat">
+        <canvas class="drawing" id="circuitDrawing" width="450" height="100"></canvas>
+        <p class="enunciat" id="enunciat"></p></div><div id="buttonDiv"></div>`;
+    
+        this.buttonDiv = document.getElementById("buttonDiv");
+        this.buttonDiv.innerHTML += '<button style="margin: 10px;" type=button id="timer" onclick="startTimer(this);">Començar</button>';
         
+        if (!circuitChanged)
+            this.buttonDiv.innerHTML += '<button style="margin: 10px;" type=button id="changeCircuit" onclick="circuitChanged = true; nextExercise();">Canvia circuit</button>';
+        
+        this.circuit = circuitType == 'serie'? new CircuitSerie(res, this.power) : new CircuitParalel(res, this.power);
+        this.circuitType = circuitType;
+        
+        this.res = res;
+
+        this.resNum = this.circuit.resistances.resNum;
+
+        var canvas = document.getElementById("circuitDrawing");
+        this.canvasWidth = canvas.style.width;
+        canvas.style.width = "80%";
+    }
+
+    showExercise()
+    {
+        var canvas = document.getElementById("circuitDrawing");
+        canvas.style.width = this.canvasWidth;
+        this.buttonDiv.innerHTML = "";
+        var res = this.res;
+
+        if (this.type == 1)
+        {
+            this.divContainer.innerHTML += `<div><div class="inputDiv">
+            <p><input type="text" id="totalRes"> Resistència total (Ohms)</p>
+            <p><input type="text" id="intensity"> Intensitat total (A)</p>
+            
+            <div id="${this.circuitType == 'serie'? 'voltages' : 'intensities'}"></div>`
+            + (potenciaEngergia? '<p><input type="text" id="potencia"> Potència total (W)</p>' + `
+            <p><input type="text" id="energia"> Energia (en Joules) consumida en ` + this.time +` segons</p>`
+            : '') + `</div>
+            <div id="ans">
+            <button type="button" onclick="onButtonPress(this);">Comprova</button>
+            </div></div>`;
+        }
+        else
+        {
+            this.divContainer.innerHTML += `<div><div class="inputDiv">
+            <p><input type="text" id="totalRes"> Resistència total (Ohms)</p>
+            <p><input type="text" id="voltage"> Voltatge total (V)</p>
+            
+            <div id="resistencies"></div>`
+            + (potenciaEngergia? '<p><input type="text" id="potencia' + `"> Potència total (W)</p>
+            <p><input type="text" id="energia"> Energia (en Joules) consumida en ` + this.time +` segons</p>`
+            : '') + `</div>
+            <div id="ans">            
+            <button type="button"onclick="onButtonPress(this);">Comprova</button>
+            </div></div>`;
+        }
+
+        var p = document.getElementById("enunciat");
+
         if (this.type == 1)
         {
             p.innerHTML = 'Tenim una font de Vt = ' + this.power + 'V, i les resistències són de';
@@ -82,26 +100,23 @@ class Exercici
         }
         
         if (this.type == 1)
-            var div = document.getElementById((circuitType == 'serie'? 'voltages' : 'intensities') + this.instance);
+            var div = document.getElementById((this.circuitType == 'serie'? 'voltages' : 'intensities'));
         else
-            var div = document.getElementById("resistencies" + this.instance);
+            var div = document.getElementById("resistencies");
         
         for (var i = 0; i < this.resNum; i++)
         {
             if (this.type == 1)
             {
-                div.innerHTML += '<p><input type="text" id="res' + i + (circuitType == 'serie'? 'Voltage' : 'Intensity') + this.instance
-                + `"> ${circuitType == 'serie'? 'Voltatge' : 'Intensitat'} resistència ` + i + (circuitType == 'serie'? ' (V)' : ' (A)') +'</p>';
+                div.innerHTML += '<p><input type="text" id="res' + i + (this.circuitType == 'serie'? 'Voltage' : 'Intensity')
+                + `"> ${this.circuitType == 'serie'? 'Voltatge' : 'Intensitat'} resistència ` + i + (this.circuitType == 'serie'? ' (V)' : ' (A)') +'</p>';
             }
             else
             {
-                div.innerHTML += '<p><input type="text" id="res' + i + this.instance
+                div.innerHTML += '<p><input type="text" id="res' + i
                 + `"> Resistència ` + i + ' (Ohms)' + '</p>';
             }
         }
-        
-        this.circuit = circuitType == 'serie'? new CircuitSerie(res, this.power) : new CircuitParalel(res, this.power);
-        this.circuitType = circuitType;
 
         const sol = this.circuit.solve();
 
@@ -116,7 +131,7 @@ class Exercici
 
     startTimer()
     {
-        var p = document.getElementById("enunciat" + this.instance);
+        var p = document.getElementById("enunciat");
         p.innerHTML += '<br/>Time: 0s';
 
         this.timerHandle = setInterval(() => {
@@ -130,8 +145,8 @@ class Exercici
         var numAnsRight = 0;
         var numAnsWrong = 0;
         var res = this.circuit.solve();
-        var totalRes = document.getElementById("totalRes" + this.instance);
-        var intensity = document.getElementById("intensity" + this.instance);
+        var totalRes = document.getElementById("totalRes");
+        var intensity = document.getElementById("intensity");
         var informe = {};
 
         if (this.type == 1)
@@ -141,26 +156,26 @@ class Exercici
             {
                 numAnsWrong++;
                 totalRes.style.setProperty("color", "red");
-                informe["ResistenciaTotal"] = "malament";
+                informe["Rt"] = "n";
             }
             else
             {
                 totalRes.style.setProperty("color", "green");
                 numAnsRight++;
-                informe["ResistenciaTotal"] = "be";
+                informe["Rt"] = "y";
             }
 
             if (isNaN(ans[1]) || (Math.abs(ans[1] - res["intensity"]) > res["intensity"] * tolerance))
             {
                 numAnsWrong++;
                 intensity.style.setProperty("color", "red");
-                informe["IntensitatTotal"] = "malament";
+                informe["It"] = "n";
             }
             else
             {
                 intensity.style.setProperty("color", "green");
                 numAnsRight++;
-                informe["IntensitatTotal"] = "be";
+                informe["It"] = "y";
             }
 
             var str = this.circuitType == 'serie'? 'Voltage' : 'Intensity';
@@ -170,45 +185,45 @@ class Exercici
                 if (isNaN(ans[i + 2]) || Math.abs(ans[i + 2] - res["res" + i + str]) > res["res" + i + str] * tolerance)
                 {
                     numAnsWrong++;
-                    document.getElementById("res" + i + str + this.instance).style.setProperty("color", "red");
-                    informe[str + "Resistencia" + i] = "malament";
+                    document.getElementById("res" + i + str).style.setProperty("color", "red");
+                    informe[str + "R" + i] = "n";
                 }
                 else
                 {
-                    document.getElementById("res" + i + str + this.instance).style.setProperty("color", "green");
+                    document.getElementById("res" + i + str).style.setProperty("color", "green");
                     numAnsRight++;
-                    informe[str + "Resistencia" + i] = "be";
+                    informe[str + "R" + i] = "y";
                 }
             }
         }
         else
         {
-            const voltage = document.getElementById("voltage" + this.instance);
+            const voltage = document.getElementById("voltage");
 
             if (isNaN(ans[0]) || Math.abs(ans[0] - res["totalRes"]) > res["totalRes"] * tolerance)
             {
                 numAnsWrong++;
                 totalRes.style.setProperty("color", "red");
-                informe["ResistenciaTotal"] = "malament";
+                informe["Rt"] = "n";
             }
             else
             {
                 totalRes.style.setProperty("color", "green");
                 numAnsRight++;
-                informe["ResistenciaTotal"] = "be";
+                informe["Rt"] = "y";
             }
             
             if (isNaN(ans[1]) || Math.abs(ans[1] - this.circuit.powerFont) > this.circuit.powerFont * tolerance)
             {
                 numAnsWrong++;
                 voltage.style.setProperty("color", "red");
-                informe["VoltatgeTotal"] = "malament";
+                informe["Vt"] = "n";
             }
             else
             {
                 voltage.style.setProperty("color", "green");
                 numAnsRight++;
-                informe["VoltatgeTotal"] = "be";
+                informe["Vt"] = "y";
             }
 
             for (var i = 0; i < this.resNum; i++)
@@ -216,14 +231,14 @@ class Exercici
                 if (isNaN(ans[i + 2]) || Math.abs(ans[i + 2] - this.circuit.resistances["res"+i]) > this.circuit.resistances["res"+i] * tolerance)
                 {
                     numAnsWrong++;
-                    document.getElementById("res" + i + this.instance).style.setProperty("color", "red");
-                    informe["Resistencia" + i] = "malament";
+                    document.getElementById("res" + i).style.setProperty("color", "red");
+                    informe["R" + i] = "n";
                 }
                 else
                 {
-                    document.getElementById("res" + i + this.instance).style.setProperty("color", "green");
+                    document.getElementById("res" + i).style.setProperty("color", "green");
                     numAnsRight++;
-                    informe["Resistencia" + i] = "be"
+                    informe["R" + i] = "y"
                 }
             }
         }
@@ -233,54 +248,42 @@ class Exercici
             if (isNaN(ans[ans.length - 2]) || Math.abs(ans[ans.length - 2] - res["power"]) > res["power"] * tolerance)
             {
                 numAnsWrong++;
-                document.getElementById("potencia" + this.instance).style.setProperty("color", "red");
-                informe["Potencia"] = "malament";
+                document.getElementById("potencia").style.setProperty("color", "red");
+                informe["Pt"] = "n";
             }
             else
             {
                 numAnsRight++;
-                document.getElementById("potencia" + this.instance).style.setProperty("color", "green");
-                informe["PotenciaTotal"] = "be";
+                document.getElementById("potencia").style.setProperty("color", "green");
+                informe["Pt"] = "y";
             }
 
             if (isNaN(ans[ans.length - 1]) || (Math.abs(ans[ans.length - 1] - res["power"] * this.time) > res["power"] * this.time * tolerance))
             {
                 numAnsWrong++;
-                document.getElementById("energia" + this.instance).style.setProperty("color", "red");
-                informe["Energia"] = "malament";
+                document.getElementById("energia").style.setProperty("color", "red");
+                informe["E"] = "n";
             }
             else
             {
                 numAnsRight++;
-                document.getElementById("energia" + this.instance).style.setProperty("color", "green");
-                informe["Energia"] = "be"
+                document.getElementById("energia").style.setProperty("color", "green");
+                informe["E"] = "y"
             }
         }
 
         informe["RespostesCorrectes"] = numAnsRight;
         informe["RespostesIncorrectes"] = numAnsWrong;
 
+        var str = "";
+
         if (numAnsWrong == 0)
-            alert("Tot correcte!");
+            str = "Tot correcte!";
         else
-            alert("Tens " + numAnsWrong + " errors!");
-
-        /* Write to a cookie the number of right and wrong answers */
-
-        var prevAnsRight = readCookie("ansRight");
-        var prevAnsWrong = readCookie("ansWrong");
-
-        if (prevAnsRight != null)
-            document.cookie = "ansRight=" + (parseInt(prevAnsRight) + numAnsRight) + "; max-age=600000;";
-        else
-            document.cookie = "ansRight=" + numAnsRight + "; max-age=600000;";
+            str = "Tens " + numAnsWrong + " errors!";
         
-        if (prevAnsWrong != null)
-            document.cookie = "ansWrong=" + (parseInt(prevAnsWrong) + numAnsWrong) + "; max-age=600000;";
-        else
-            document.cookie = "ansWrong=" + numAnsWrong + "; max-age=600000;";
-    
-        informe["Intents"] = this.intents;
+        var div = document.getElementById("ans");
+        div.innerHTML = '<p>' + str + '</p>' + div.innerHTML.replace("Comprova", "Següent");
         informe["Temps"] = this.seconds;
         
         return informe;
@@ -288,7 +291,7 @@ class Exercici
 
     draw()
     {
-        var canvas = /** @type {HTMLCanvasElement} */ (document.getElementById("circuitDrawing" + this.instance));
+        var canvas = /** @type {HTMLCanvasElement} */ (document.getElementById("circuitDrawing"));
         var context = canvas.getContext("2d");
 
         if (this.circuitType == 'serie')
@@ -403,22 +406,13 @@ class Exercici
 
 class ExerciciMixt
 {
-    constructor(divID, instance = null)
+    constructor(divID)
     {
         if (potenciaEngergia)
             this.time = parseInt(Math.random() * 200 + 50);
-        
-        if (instance == null)
-        {
-            this.instance = instances;
-            instances++;
-        }
-        else
-            this.instance = instance;
 
         this.divContainer = document.getElementById(divID);
         this.type = 'mixt';
-        this.intents = 0;
         this.power = Math.round(Math.random() * 21) + 3;
         this.seconds = 0;
 
@@ -430,56 +424,56 @@ class ExerciciMixt
         this.circuit = new CircuitMixt(this.power);
 
         this.divContainer.innerHTML = `<div class="divEnunciat">
-        <canvas class="drawing" id="circuitDrawing` + this.instance + `" width="375" height="100"></canvas>
-        <p class="enunciat" id="enunciat` + this.instance + `"></p></div><div id="buttonDiv` + this.instance +`"></div>`;
+        <canvas class="drawing" id="circuitDrawing" width="375" height="100"></canvas>
+        <p class="enunciat" id="enunciat"></p></div><div id="buttonDiv"></div>`;
     
-        this.buttonDiv = document.getElementById("buttonDiv" + this.instance);
-        this.buttonDiv.innerHTML += '<button style="margin: 10px;" type=button id="timer' + this.instance + '" onclick="startTimer(this);">Començar</button>';
+        this.buttonDiv = document.getElementById("buttonDiv");
+        this.buttonDiv.innerHTML += '<button style="margin: 10px;" type=button id="timer" onclick="startTimer(this);">Començar</button>';
         
         if (!circuitChanged)
-            this.buttonDiv.innerHTML += '<button style="margin: 10px;" type=button id="changeCircuit" onclick="nextExercise();">Canvia circuit</button>';
+            this.buttonDiv.innerHTML += '<button style="margin: 10px;" type=button id="changeCircuit" onclick="circuitChanged = true; nextExercise();">Canvia circuit</button>';
         
-            this.resNum = this.circuit.resistances.resNum;
+        this.resNum = this.circuit.resistances.resNum;
 
-        var canvas = /** @type {HTMLCanvasElement} */ (document.getElementById("circuitDrawing" + this.instance));
+        var canvas = document.getElementById("circuitDrawing");
         this.canvasWidth = canvas.style.width;
-        canvas.style.width = "50%";
+        canvas.style.width = "80%";
     }
 
     showExercise()
     {
-        var canvas = /** @type {HTMLCanvasElement} */ (document.getElementById("circuitDrawing" + this.instance));
+        var canvas = document.getElementById("circuitDrawing");
         canvas.style.width = this.canvasWidth;
         this.buttonDiv.innerHTML = "";
         this.divContainer.innerHTML += `<div><div class="inputDiv">
 
-        <p><input type="text" id="totalRes` + this.instance + `"> Resistència total (Ohms)</p>
-        <p><input type="text" id="intensity` + this.instance + `"> Intensitat total (A)</p>
+        <p><input type="text" id="totalRes"> Resistència total (Ohms)</p>
+        <p><input type="text" id="intensity"> Intensitat total (A)</p>
         
-        <div id="voltages` + this.instance + `"></div>`
-        + (potenciaEngergia? '<p><input type="text" id="potencia' + this.instance + `"> Potència total (W)</p>
-        <p><input type="text" id="energia` + this.instance + `"> Energia (en Joules) consumida en ` + this.time +` segons</p>`
+        <div id="voltages"></div>`
+        + (potenciaEngergia? `<p><input type="text" id="potencia"> Potència total (W)</p>
+        <p><input type="text" id="energia"> Energia (en Joules) consumida en ` + this.time +` segons</p>`
         : '') + `</div>
         <div id="ans">
-        <button type="button" id="${this.instance}" onclick="onButtonPress(this);">Comprova</button>
+        <button type="button" onclick="onButtonPress(this);">Comprova</button>
         </div></div>`;
 
-        var p = document.getElementById("enunciat" + this.instance);
-        var div = document.getElementById('voltages' + this.instance);
+        var p = document.getElementById("enunciat");
+        var div = document.getElementById("voltages");
 
         p.innerHTML = 'Tenim una font de Vt = ' + this.power + 'V, i les resistències són de';
         
         for (var i = 0; i < this.circuit.resistances.resNum; i++)
         {
             p.innerHTML += '</br> R' + i + " = " + this.circuit.resistances["res"+i] + ' Ohms';
-            div.innerHTML += '<p><input type="text" id="res' + i + 'Voltage' + this.instance
+            div.innerHTML += '<p><input type="text" id="res' + i + 'Voltage'
             + `"> Voltatge resistència ` + i +' (V)</p>';
         }
     }
 
     startTimer()
     {
-        var p = document.getElementById("enunciat" + this.instance);
+        var p = document.getElementById("enunciat");
         p.innerHTML += '<br/>Time: 0s';
 
         this.timerHandle = setInterval(() => {
@@ -493,8 +487,8 @@ class ExerciciMixt
         var numAnsRight = 0;
         var numAnsWrong = 0;
         var res = this.circuit.solve();
-        var totalRes = document.getElementById("totalRes" + this.instance);
-        var intensity = document.getElementById("intensity" + this.instance);
+        var totalRes = document.getElementById("totalRes");
+        var intensity = document.getElementById("intensity");
         var informe = {};
         
         if (isNaN(ans[0]) || Math.abs(ans[0] - res["totalRes"]) > res["totalRes"] * tolerance)
@@ -530,13 +524,13 @@ class ExerciciMixt
             if (isNaN(ans[i + 2]) || Math.abs(ans[i + 2] - res["res" + i + str]) > res["res" + i + str] * tolerance)
             {
                 numAnsWrong++;
-                document.getElementById("res" + i + str + this.instance).style.setProperty("color", "red");
+                document.getElementById("res" + i + str).style.setProperty("color", "red");
             
                 informe[str + "R" + i] = "n";
             }
             else
             {
-                document.getElementById("res" + i + str + this.instance).style.setProperty("color", "green");
+                document.getElementById("res" + i + str).style.setProperty("color", "green");
                 numAnsRight++;
                 informe[str + "R" + i] = "y";
             }
@@ -547,26 +541,26 @@ class ExerciciMixt
             if (isNaN(ans[ans.length - 2]) || (Math.abs(ans[ans.length - 2] - res["power"]) > res["power"] * tolerance))
             {
                 numAnsWrong++;
-                document.getElementById("potencia" + this.instance).style.setProperty("color", "red");
+                document.getElementById("potencia").style.setProperty("color", "red");
                 informe["Potencia"] = "n";
             }
             else
             {
                 numAnsRight++;
-                document.getElementById("potencia" + this.instance).style.setProperty("color", "green");
+                document.getElementById("potencia").style.setProperty("color", "green");
                 informe["Potencia"] = "y";
             }
 
             if (isNaN(ans[ans.length - 1]) || (Math.abs(ans[ans.length - 1] - res["power"] * this.time) > res["power"] * this.time * tolerance))
             {
                 numAnsWrong++;
-                document.getElementById("energia" + this.instance).style.setProperty("color", "red");
+                document.getElementById("energia").style.setProperty("color", "red");
                 informe["Energia"] = "n";
             }
             else
             {
                 numAnsRight++;
-                document.getElementById("energia" + this.instance).style.setProperty("color", "green");
+                document.getElementById("energia").style.setProperty("color", "green");
                 informe["Energia"] = "y";
             }
         }
@@ -584,23 +578,6 @@ class ExerciciMixt
         var div = document.getElementById("ans");
 
         div.innerHTML = '<p>' + str + '</p>' + div.innerHTML.replace("Comprova", "Següent");
-
-        /* Write to a cookie the number of right and wrong answers */
-
-        var prevAnsRight = readCookie("ansRight");
-        var prevAnsWrong = readCookie("ansWrong");
-
-        if (prevAnsRight != null)
-            document.cookie = "ansRight=" + (parseInt(prevAnsRight) + numAnsRight) + "; max-age=600000;";
-        else
-            document.cookie = "ansRight=" + numAnsRight + "; max-age=600000;";
-        
-        if (prevAnsWrong != null)
-            document.cookie = "ansWrong=" + (parseInt(prevAnsWrong) + numAnsWrong) + "; max-age=600000;";
-        else
-            document.cookie = "ansWrong=" + numAnsWrong + "; max-age=600000;";
-
-        informe["Intents"] = this.intents;
         informe["Temps"] = this.seconds;
         
         return informe;
@@ -608,7 +585,7 @@ class ExerciciMixt
 
     draw()
     {
-        var canvas = /** @type {HTMLCanvasElement} */ (document.getElementById("circuitDrawing" + this.instance));
+        var canvas = /** @type {HTMLCanvasElement} */ (document.getElementById("circuitDrawing"));
         var context = canvas.getContext("2d");
         var currentNode = this.circuit.initialNode;
 

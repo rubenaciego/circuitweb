@@ -14,20 +14,26 @@
         <input type="hidden" name="potencia" id="formPotencia"/>
         <input type="hidden" name="resistencies" id="formResistencies" />
     </form>
+    
+    <h3 class="title">Tipus d'exercici</h3>
+    <div>
+    <p onmouseover="this.style.textDecoration = 'underline';" onmouseout="this.style.textDecoration = 'none';" class="circuit-title" onclick="loadPage(this);">Circuits sèrie</p>
+    <p onmouseover="this.style.textDecoration = 'underline';" onmouseout="this.style.textDecoration = 'none';" class="circuit-title" onclick="loadPage(this);">Circuits paral·lel</p>
+    <p onmouseover="this.style.textDecoration = 'underline';" onmouseout="this.style.textDecoration = 'none';" class="circuit-title" onclick="loadPage(this);">Circuits mixtos</p>
+    </div>
 
-    <p>Magnitud resistències:<br/>
+    <h2 style="margin: 20px; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif">
+        Paràmetres</h2>
+    <div class="paramDiv">
+    <p>Magnitud resistències:<br/></p>
+    <p style="margin:10px">
         10-100 Ohms <input type="radio" id="radio1" name="resMag"/><br/>
         100-1k Ohms <input type="radio" id="radio2" name="resMag"/><br/>
         500-10k Ohms <input type="radio" id="radio3" name="resMag"/><br/>
     </p>
 
     <p class="checkbox">Potència i energia <input type="checkbox" id="potencia"></p>
-    <br/>
-    <p onmouseover="this.style.textDecoration = 'underline';" onmouseout="this.style.textDecoration = 'none';" class="circuit-title" onclick="loadPage(this);">Circuits sèrie</p>
-    <br/>
-    <p onmouseover="this.style.textDecoration = 'underline';" onmouseout="this.style.textDecoration = 'none';" class="circuit-title" onclick="loadPage(this);">Circuits paral·lel</p>
-    <br/>
-    <p onmouseover="this.style.textDecoration = 'underline';" onmouseout="this.style.textDecoration = 'none';" class="circuit-title" onclick="loadPage(this);">Circuits mixtos</p>
+    </div>
 </body>
 
 </html>
