@@ -1,6 +1,6 @@
 
-window.onload = function() {
-
+window.onload = function()
+{
     var selected = false;
 
     for (var i = 1; i <= 3; i++)
