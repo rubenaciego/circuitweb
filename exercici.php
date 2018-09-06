@@ -9,6 +9,8 @@
             print "Sèrie";
         else if ($name == "paralel")
             print "Paral·lel";
+        else if ($name == "aleatori")
+            print "Aleatoris";
         else
             print "Mixtos";
     ?></title>
@@ -17,7 +19,7 @@
     <link rel="stylesheet" type="text/css" media="screen" href="styles/main.css" />
     
     <script>
-        const pageName = "<?php print $_GET["circuit"]; ?>";
+        var pageName = "<?php print $_GET["circuit"]; ?>";
         const potenciaEngergia = <?php print $_GET["potencia"] ?>;
         const resOption = <?php print $_GET["resistencies"] ?>;
         const minRes = resOption == 1 ? 10 : resOption == 2 ? 100 : resOption == 3 ? 500 : 10;  

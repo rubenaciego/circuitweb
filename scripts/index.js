@@ -50,6 +50,9 @@ function loadPage(input)
         case "Circuits mixtos":
             document.getElementById("formCircuit").value = "mixt";
             break;
+        case "Aleatori":
+            document.getElementById("formCircuit").value = "aleatori";
+            break;
     }
 
     form.submit();

@@ -5,6 +5,7 @@ var informes1 = [];
 const maxExercicis = 5;
 var actualExercici = 0;
 var circuitChanged = false;
+var aleatori = pageName == "aleatori";
 
 window.onload = nextExercise;
 
@@ -12,6 +13,9 @@ function nextExercise()
 {
     if (actualExercici >= maxExercicis)
     {
+        if (aleatori)
+            pageName = "serie";
+        
         generateInformes();
         return;
     }
@@ -23,6 +27,18 @@ function nextExercise()
     div.innerHTML = "";
 
     div.innerHTML += '<div id="exercici"></div><br/>';
+
+    if (aleatori)
+    {
+        var num = Math.random();
+
+        if (num > 0.66)
+            pageName = "mixt";
+        else if (num < 0.66 && num > 0.33)
+            pageName = "paralel"
+        else
+            pageName = "serie";
+    }
 
     if (pageName != "mixt")
         exercise = new Exercici('exercici', pageName, Math.random() > 0.5 ? 1 : 2);
@@ -90,7 +106,7 @@ function generateInformes()
 {
     document.getElementById("informeDiv").innerHTML = informeText;
 
-    if (exercise.type == 'mixt')
+    if (pageName == 'mixt')
     {
         document.getElementById("table").innerHTML = "";
         buildHtmlTable("#table" ,informes0);
@@ -133,11 +149,11 @@ function generateInformes()
         voltageQuantity += j;
     }
 
-    document.getElementById("total" + (exercise.type == 'mixt'? '' : '0')).innerHTML = "Resistencia Total: " + resistenciaTotalBe
+    document.getElementById("total" + (pageName == 'mixt'? '' : '0')).innerHTML = "Resistencia Total: " + resistenciaTotalBe
     + "/" + circuitQuantity + ". Intensitat Total: " + intensitatTotalBe + "/" + circuitQuantity
     + ". Voltatges: " + voltatgesBe + "/" + voltageQuantity;
 
-    if (exercise.type == 'mixt')
+    if (pageName == 'mixt')
     {
         document.getElementById("exercicis").remove();
         return;
