@@ -19,7 +19,7 @@ class Exercici
         this.seconds = 0;
 
         this.power = Math.round(Math.random() * 21) + 3;
-        this.resNum = Math.round(Math.random() * 5) + 2;
+        this.resNum = Math.round(Math.random() * 4) + 3;
 
         if (resOption == 2)
             this.power *= 5;
@@ -179,6 +179,7 @@ class Exercici
             }
 
             var str = this.circuitType == 'serie'? 'Voltage' : 'Intensity';
+            var informeStr = str == 'Voltage' ? 'Voltatge' : 'Intensitat';
 
             for (var i = 0; i < this.resNum; i++)
             {
@@ -186,13 +187,13 @@ class Exercici
                 {
                     numAnsWrong++;
                     document.getElementById("res" + i + str).style.setProperty("color", "red");
-                    informe[str + "R" + i] = "n";
+                    informe[informeStr + "R" + i] = "n";
                 }
                 else
                 {
                     document.getElementById("res" + i + str).style.setProperty("color", "green");
                     numAnsRight++;
-                    informe[str + "R" + i] = "y";
+                    informe[informeStr + "R" + i] = "y";
                 }
             }
         }
@@ -284,7 +285,10 @@ class Exercici
         
         var div = document.getElementById("ans");
         div.innerHTML = '<p>' + str + '</p>' + div.innerHTML.replace("Comprova", "Següent");
-        informe["Temps"] = this.seconds;
+        
+        var min = parseInt(this.seconds / 60);
+        this.seconds = this.seconds % 60;
+        informe["Temps"] = min + "min " + this.seconds + "s";
         
         return informe;
     }
@@ -526,13 +530,13 @@ class ExerciciMixt
                 numAnsWrong++;
                 document.getElementById("res" + i + str).style.setProperty("color", "red");
             
-                informe[str + "R" + i] = "n";
+                informe["VoltatgeR" + i] = "n";
             }
             else
             {
                 document.getElementById("res" + i + str).style.setProperty("color", "green");
                 numAnsRight++;
-                informe[str + "R" + i] = "y";
+                informe["VoltatgeR" + i] = "y";
             }
         }
 
@@ -578,7 +582,10 @@ class ExerciciMixt
         var div = document.getElementById("ans");
 
         div.innerHTML = '<p>' + str + '</p>' + div.innerHTML.replace("Comprova", "Següent");
-        informe["Temps"] = this.seconds;
+        
+        var min = parseInt(this.seconds / 60);
+        this.seconds = this.seconds % 60;
+        informe["Temps"] = min + "min " + this.seconds + "s";
         
         return informe;
     }

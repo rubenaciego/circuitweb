@@ -53,7 +53,7 @@
 </head>
 
 <body>
-    <p style="margin:10px;" id="exerciseCounter"></p>
+    <p style="margin:25px;" id="exerciseCounter"></p>
     <div id="exercicis" class="exercici"></div>
     <br/><br/>
     <div id="informeDiv"></div>
