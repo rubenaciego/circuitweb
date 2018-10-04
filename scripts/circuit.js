@@ -166,7 +166,13 @@ class CircuitMixt extends Circuit
                 /* Two paralel resistors */
                 this.paralelBranch = true;
 
-                var r = new CircuitMixt.Resistor(Math.round(Math.random() * (maxRes - minRes)) + minRes);
+                var possibleRes = 0;
+                
+                do {
+                    possibleRes = Math.round(Math.random() * (maxRes - minRes)) + minRes;
+                } while (Object.values(this.resistances).includes(possibleRes));
+
+                var r = new CircuitMixt.Resistor(possibleRes);
                 this.resistances["res" + this.resistances.resNum] = r.resValue;
                 this.resistances.resNum++;
                 currentNode.nextNode1 = r;
@@ -186,8 +192,14 @@ class CircuitMixt extends Circuit
             else
             {
                 /* One resistor */
+                
+                var possibleRes = 0;
+                
+                do {
+                    possibleRes = Math.round(Math.random() * (maxRes - minRes)) + minRes;
+                } while (Object.values(this.resistances).includes(possibleRes));
 
-                var r = new CircuitMixt.Resistor(Math.round(Math.random() * (maxRes - minRes)) + minRes);
+                var r = new CircuitMixt.Resistor(possibleRes);
                 this.resistances["res" + this.resistances.resNum] = r.resValue;
                 this.resistances.resNum++;
                 currentNode.nextNode1 = r;
@@ -201,7 +213,13 @@ class CircuitMixt extends Circuit
             {
                 /* Add another resistor */
 
-                var r = new CircuitMixt.Resistor(Math.round(Math.random() * (maxRes - minRes)) + minRes);
+                var possibleRes = 0;
+                
+                do {
+                    possibleRes = Math.round(Math.random() * (maxRes - minRes)) + minRes;
+                } while (Object.values(this.resistances).includes(possibleRes));
+
+                var r = new CircuitMixt.Resistor(possibleRes);
                 this.resistances["res" + this.resistances.resNum] = r.resValue;
                 this.resistances.resNum++;
                 currentNode.nextNode1 = r;

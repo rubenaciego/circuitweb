@@ -61,25 +61,25 @@ function onButtonPress(button)
 
     var ans = [];
 
-    ans.push(parseFloat(document.getElementById("totalRes").value));
+    ans.push(parseFloat(document.getElementById("totalRes").value.replace(',', '.')));
     
     if (exercise.type == 1 || exercise.type == 'mixt')
-        ans.push(parseFloat(document.getElementById("intensity").value));
+        ans.push(parseFloat(document.getElementById("intensity").value.replace(',', '.')));
     else
-        ans.push(parseFloat(document.getElementById("voltage").value));
+        ans.push(parseFloat(document.getElementById("voltage").value.replace(',', '.')));
     
     for (var i = 0; i < exercise.resNum; i++)
     {
         if (exercise.type == 1 || exercise.type == 'mixt')
-            ans.push(parseFloat(document.getElementById("res" + i + (pageName == 'serie' || pageName == 'mixt'? 'Voltage' : 'Intensity')).value));
+            ans.push(parseFloat(document.getElementById("res" + i + (pageName == 'serie' || pageName == 'mixt'? 'Voltage' : 'Intensity')).value.replace(',', '.')));
         else
-            ans.push(parseFloat(document.getElementById("res" + i).value));
+            ans.push(parseFloat(document.getElementById("res" + i).value.replace(',', '.')));
     }
 
     if (potenciaEngergia)
     {
-        ans.push(parseFloat(document.getElementById("potencia").value));
-        ans.push(parseFloat(document.getElementById("energia").value));
+        ans.push(parseFloat(document.getElementById("potencia").value.replace(',', '.')));
+        ans.push(parseFloat(document.getElementById("energia").value.replace(',', '.')));
     }
 
     var inform = exercise.checkAnswers(ans);

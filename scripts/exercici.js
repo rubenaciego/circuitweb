@@ -157,6 +157,7 @@ class Exercici
                 numAnsWrong++;
                 totalRes.style.setProperty("color", "red");
                 informe["Rt"] = "n";
+                totalRes.parentElement.innerHTML += '<span style="color: #FFA500;">  ' + res["totalRes"] + 'Ohms</span>';
             }
             else
             {
@@ -170,6 +171,7 @@ class Exercici
                 numAnsWrong++;
                 intensity.style.setProperty("color", "red");
                 informe["It"] = "n";
+                intensity.parentElement.innerHTML += '<span style="color: #FFA500;">  ' + res["intensity"].toFixed(5) + 'A</span>';
             }
             else
             {
@@ -188,6 +190,7 @@ class Exercici
                     numAnsWrong++;
                     document.getElementById("res" + i + str).style.setProperty("color", "red");
                     informe[informeStr + "R" + i] = "n";
+                    document.getElementById("res" + i + str).parentElement.innerHTML += '<span style="color: #FFA500;">  ' + res["res" + i + str].toFixed(5) + (str == 'Voltage' ? 'V' : 'A') + '</span>';
                 }
                 else
                 {
@@ -206,6 +209,7 @@ class Exercici
                 numAnsWrong++;
                 totalRes.style.setProperty("color", "red");
                 informe["Rt"] = "n";
+                totalRes.parentElement.innerHTML += '<span style="color: #FFA500;">  ' + res["totalRes"] + ' Ohms</span>';
             }
             else
             {
@@ -219,6 +223,7 @@ class Exercici
                 numAnsWrong++;
                 voltage.style.setProperty("color", "red");
                 informe["Vt"] = "n";
+                voltage.parentElement.innerHTML += '<span style="color: #FFA500;">  ' + this.circuit.powerFont + 'V</span>';
             }
             else
             {
@@ -229,11 +234,12 @@ class Exercici
 
             for (var i = 0; i < this.resNum; i++)
             {
-                if (isNaN(ans[i + 2]) || Math.abs(ans[i + 2] - this.circuit.resistances["res"+i]) > this.circuit.resistances["res"+i] * tolerance)
+                if (isNaN(ans[i + 2]) || Math.abs(ans[i + 2] - this.circuit.resistances["res" + i]) > this.circuit.resistances["res" + i] * tolerance)
                 {
                     numAnsWrong++;
                     document.getElementById("res" + i).style.setProperty("color", "red");
                     informe["R" + i] = "n";
+                    document.getElementById("res" + i).parentElement.innerHTML += '<span style="color: #FFA500;">  ' + this.circuit.resistances["res" + i] + ' Ohms</span>';
                 }
                 else
                 {
@@ -251,6 +257,7 @@ class Exercici
                 numAnsWrong++;
                 document.getElementById("potencia").style.setProperty("color", "red");
                 informe["Pt"] = "n";
+                document.getElementById("potencia").parentElement.innerHTML += '<span style="color: #FFA500;">  ' + res["power"].toFixed(5) + 'W</span>';
             }
             else
             {
@@ -264,6 +271,7 @@ class Exercici
                 numAnsWrong++;
                 document.getElementById("energia").style.setProperty("color", "red");
                 informe["E"] = "n";
+                document.getElementById("energia").parentElement.innerHTML += '<span style="color: #FFA500;">  ' + (res["power"] * this.time).toFixed(5) + 'J</span>';
             }
             else
             {
@@ -500,6 +508,7 @@ class ExerciciMixt
             numAnsWrong++;
             informe["Rt"] = 'n';
             totalRes.style.setProperty("color", "red");
+            totalRes.parentElement.innerHTML += '<span style="color: #FFA500;">  ' + res["totalRes"].toFixed(5) + ' Ohms</span>';
         }
         else
         {
@@ -513,6 +522,7 @@ class ExerciciMixt
             numAnsWrong++;
             intensity.style.setProperty("color", "red");
             informe["It"] = 'n';
+            intensity.parentElement.innerHTML += '<span style="color: #FFA500;">  ' + res["intensity"].toFixed(5) + 'A</span>';
         }
         else
         {
@@ -522,6 +532,7 @@ class ExerciciMixt
         }
 
         var str = 'Voltage';
+        console.log(res);
 
         for (var i = 0; i < this.resNum; i++)
         {
@@ -529,8 +540,8 @@ class ExerciciMixt
             {
                 numAnsWrong++;
                 document.getElementById("res" + i + str).style.setProperty("color", "red");
-            
                 informe["VoltatgeR" + i] = "n";
+                document.getElementById("res" + i + str).parentElement.innerHTML += '<span style="color: #FFA500;">  ' + res["res" + i + str].toFixed(5) + 'V</span>';
             }
             else
             {
@@ -547,6 +558,7 @@ class ExerciciMixt
                 numAnsWrong++;
                 document.getElementById("potencia").style.setProperty("color", "red");
                 informe["Potencia"] = "n";
+                document.getElementById("potencia").parentElement.innerHTML += '<span style="color: #FFA500;">  ' + res["power"].toFixed(5) + 'W</span>';
             }
             else
             {
@@ -560,6 +572,7 @@ class ExerciciMixt
                 numAnsWrong++;
                 document.getElementById("energia").style.setProperty("color", "red");
                 informe["Energia"] = "n";
+                document.getElementById("energia").parentElement.innerHTML += '<span style="color: #FFA500;">  ' + (res["power"] * this.time).toFixed(5) + 'J</span>';
             }
             else
             {
